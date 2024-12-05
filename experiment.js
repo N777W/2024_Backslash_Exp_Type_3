@@ -45,7 +45,8 @@ let experiment_configuration_function = (writer) => {
                 "1. You will be presented with a string in one of two formats:\n" +
                 "   - Plain text.\n" +
                 "   - Text where backslashes are highlighted in color.\n" +
-                "2. Your task is to carefully count all backslashes in the string, including those in escape sequences.\n"
+                "2. Your task is to carefully count all backslashes in the string, including those in escape sequences.\n"+
+                "3. If you dont know the answear you can skip the task by entering 'n' \n"
             )
         ]),
         pre_run_training_instructions: writer.string_page_command(
@@ -79,16 +80,26 @@ let experiment_configuration_function = (writer) => {
             t.do_print_task = () => {
                 writer.clear_stage();
                 const appearance = t.treatment_value("Appearance");
+
+                // Display the task
                 if (appearance === "colored") {
                     writer.print_html_on_stage(applyColorToTask(task.task));
                 } else {
                     writer.print_html_on_stage(task.task);
                 }
+                writer.print_html_on_stage(
+                    "<p>If you dont know the answear you can skip this task by entering <strong>'n'</strong>.</p>"
+                );
             };
             t.expected_answer = task.solution;
             t.accepts_answer_function = (given_answer) => {
+                if (given_answer === "n") {
+                    t.expected_answer = "skipped";
+                    return true;
+                }
                 return parseInt(given_answer) === task.solution;
             };
+
             t.do_print_error_message = (given_answer) => {
                 writer.clear_error();
                 writer.print_html_on_error(
