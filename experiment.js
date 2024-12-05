@@ -65,15 +65,23 @@ let experiment_configuration_function = (writer) => {
         pre_run_experiment_instructions: writer.string_page_command(
             writer.convert_string_to_html_string("You entered the experiment phase.\n\n")
         ),
+        post_questionnaire: [
+            Nof1.free_text("Name","What's your name?"),
+            Nof1.free_text("Age","How old are you?"),
+            Nof1.alternatives("Status","What is your current working status?",
+                ["Undergraduate student (BSc not yet finished)", "Graduate student (at least BSc finished)", "PhD student", "Professional software developer", "Teacher", "Other"]),
+            Nof1.free_text("Feedback","Feedback"),
+        ],
         finish_pages: [
             writer.string_page_command(
                 writer.convert_string_to_html_string("Thanks for the fish.")
             )
         ],
+
         layout: [
             { variable: "Appearance", treatments: ["plain", "colored"] } // Add "plain" and "colored" treatments
         ],
-        repetitions: 15, // Repeat the experiment for each treatment
+        repetitions: 10, // Repeat the experiment for each treatment
         measurement: Nof1.Time_to_finish(Nof1.text_input_experiment),
         task_configuration: (t) => {
             const task = generateComplexBackslashTask(); // Generate a new task for each repetition
